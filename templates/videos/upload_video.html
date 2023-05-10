@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Загрузить видео{% endblock %}
+{% block content %}
+<div class="row" style="margin-left: 33%">
+    <div class="col-md-auto p-5">
+        <div class="card">
+            <div class="card-header">Загрузить видео</div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" action="{% url 'videos:upload_video' %}">
+                    {% include 'includes/authentication.html' %}
+                    <div class="col-md-6 offset-md-4">
+                        <button type="submit" class="btn btn-primary">
+                            Загрузить
+                        </button>
+                    </div>
+                </form>
+            </div> <!-- card body -->
+        </div> <!-- card -->
+    </div> <!-- col -->
+</div> <!-- row -->
+{% endblock %}

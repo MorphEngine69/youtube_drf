@@ -1,0 +1,48 @@
+{% load user_filters %}
+{% load profile_filters %}
+<!--Комментарии-->
+
+{% if user.is_authenticated %}
+<div style="margin-top: 5px; display: flex">
+    <!--Аватарка-->
+    <p>
+        <a href="{% url 'videos:profile' user %}">
+            <img src="{{ user|get_profile }}" width="36" height="36" style="border-radius: 20px; margin-right: 12px">
+        </a>
+    </p>
+    <!--Аватарка-->
+    <form action="{% url 'videos:add_comment' video.pk %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="text" placeholder="Введите комментарий" style="width: 815px;
+             height: 35px; border: none; border-radius: 20px; padding-left: 10px">
+        <button type="submit" class="button_comment">Оставить комментарий</button>
+    </form>
+
+</div>
+<p style="border: 1px solid black; opacity: 5%; margin-bottom: 25px"></p>
+{% endif %}
+
+{% for comment in comments %}
+<div style="display: flex; vertical-align: top;">
+    <!--Аватарка-->
+    <p>
+        <a href="{% url 'videos:profile' comment.author %}">
+            <img src="{{ comment.author.picture.url }}" width="36" height="36" style="border-radius: 20px; margin-right: 12px">
+        </a>
+    </p>
+    <!--Аватарка-->
+
+    <div>
+        <div style="display: flex;height: 25px">
+            <p style="margin-right: 5px; font-size: 15px">
+                <a style="text-decoration: none; color: black" href="{% url 'videos:profile' comment.author %}">
+                    @{{ comment.author }}
+                </a>
+            </p>
+            <p style="opacity: 70%; font-size: 13px; margin-top: 3px">{{ comment.pub_date }}</p>
+        </div>
+        <p style="font-size: 15px">{{ comment.text }}</p>
+    </div>
+</div>
+{% endfor %}
+<!--Комментарии-->

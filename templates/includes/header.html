@@ -1,0 +1,36 @@
+{% load profile_filters %}
+<header class="header">
+    <div class="logo left">
+        <i id="menu" class="material-icons">menu</i>
+        <a href="{% url 'videos:index' %}"><img src="https://www.freecodecamp.org/news/content/images/2022/01/yt-logo.png"></a>
+    </div>
+
+    <div class="search center">
+        <form action="{% url 'videos:search_results' %}" method="get" style="border-radius: 5px">
+            <input name="search" type="text" placeholder="Введите запрос"/>
+            <button type="submit"><i class="material-icons">search</i></button>
+        </form>
+
+    </div>
+
+    <div class="icons right">
+        {% if user.is_authenticated %}
+        <a href="{% url 'videos:upload_video' %}"><i class="material-icons">videocam</i></a>
+        <img type="button" data-bs-toggle="dropdown" aria-expanded="false"
+             class="material-icons"
+             src="{{ user|get_profile }}" , alt="#" width="38" height="24" style="margin-bottom: 15px; border-radius: 20px">
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'videos:profile' user %}">Мой канал</a></li>
+            <li><a class="dropdown-item" href="{% url 'videos:upload_video' %}">Загрузить видео</a></li>
+            {% if user.is_superuser %}
+            <li><a class="dropdown-item" style="color: red" href="{% url 'admin:index' %}">Админ-панель</a></li>
+            {% endif %}
+            <li><a class="dropdown-item" href="{% url 'users:logout' %}">Выйти</a></li>
+        </ul>
+        {% else %}
+        <a href="{% url 'users:login' %}" class="btn btn-outline-success">Войти</a>
+        <a href="{% url 'users:signup' %}" class="btn btn-outline-danger">Регистрация</a>
+        {% endif %}
+
+    </div>
+</header>

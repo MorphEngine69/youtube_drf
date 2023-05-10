@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}{{profile.user}}{% endblock %}
+{% block content %}
+{% include 'includes/sidebar.html' %}
+<div style="height: 180px; width: 100%;">
+    <div style="margin-top: 50px; display: flex; margin-left: 10%">
+        <div>
+            <img src="{{profile.picture.url}}" width="128" height="128" style="border-radius: 70px">
+        </div>
+        <div class="zero_margin">
+            <div style="display: flex">
+                <p style="font-size: 35px; margin-top: 15px; margin-left: 25px">{{ profile.user }}</p>
+                {% if user != profile.user %}
+                {% if following %}
+                <a class="sub_button" href="{% url 'videos:profile_unfollow' profile.user %}" style="margin-top: 15px; margin-left: 200%">Отписаться</a>
+                {% else %}
+                <a class="sub_button" href="{% url 'videos:profile_follow' profile.user %}" style="margin-top: 15px; margin-left: 200%">Подписаться</a>
+                {% endif %}
+                {% endif %}
+            </div>
+
+            <div style="display: flex">
+                <p style="font-size: 15px;margin-left: 25px; opacity: 75%">{{ follower_count }} подписчиков</p>
+                <p style="font-size: 15px;margin-left: 10px; opacity: 75%">{{ videos.count }} видео</p>
+            </div>
+        </div>
+    </div>
+
+    <p style="border: 1px solid; opacity: 10%; margin-top: 20px; margin-bottom: 20px"></p>
+
+    <div style="margin-left: 10%">
+        <div class="row row-cols-auto" style="max-width: 1521px">
+            {% for video in videos reversed %}
+            <div class="col col-auto text_bottom_video" style="margin-bottom: 40px; text-align: left">
+                <a href="{% url 'videos:video_detail' video.pk %}">
+                    <img src="{{ video.preview.url }}" width="305" height="172" style="border-radius: 15px">
+                </a>
+                <div style="margin-top: 10px;">
+                    <p style="max-width: 280px; word-wrap: break-word; margin-bottom: 0; font-weight: 500; font-family: Roboto">
+                        <a href="{% url 'videos:video_detail' video.pk %}">{{video.title| truncatechars:50 }}</a>
+                    </p>
+
+                </div>
+                <!--Просмотры и время публикации видео-->
+                <div style="display: flex;">
+<!--                    <p style="margin-right: 5px; opacity: 65%">0 просмотров •</p>-->
+                    <p style="opacity: 65%">{{ video.pub_date }}</p>
+                    <a href="{% url 'videos:delete_video' video.pk %}" title="Удалить видео" style="margin-bottom: 0; margin-left: 5px;">
+                        <img src="/media/trash.png" alt="#" width="22" height="22">
+                    </a>
+                </div>
+                <!--Просмотры и время публикации видео-->
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

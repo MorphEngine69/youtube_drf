@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load embed_video_tags %}
+{% block title %}
+{{ video.title| truncatechars:25 }}
+{% endblock %}
+{% block content %}
+
+<div class="content" style="display: flex">
+    <div style="margin-left: 80px; margin-top: 20px; width: 1280px">
+        <div>
+            {% video video.video '1280x720' %}
+            <div style="display: flex; margin-top: 15px">
+                {% if user.is_authenticated and video.author.user == user or user.is_superuser %}
+                <a class="btn btn-outline-danger" href="{% url 'videos:edit_video' video.pk %}">
+                    {% if video.author.user == user %}
+                    Редактировать
+                    {% else %}
+                    Админ-редактирование
+                    {% endif %}
+                </a>
+                <a href="{% url 'videos:delete_video' video.pk %}" style="margin-left: 10px">
+                    <img src="/media/trash.png" alt="#" width="38" height="38">
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!--Название видео-->
+        <p style="font-size: 22px; font-weight: 600; margin-top: 20px; margin-bottom: 5px">{{ video.title }}</p>
+        <!--Название видео-->
+
+        <div style="display: flex; vertical-align: top;">
+            <!--Аватарка-->
+            <p>
+                <a href="{% url 'videos:profile' video.author %}">
+                    <img src="{{ video.author.picture.url }}" width="36" height="36" style="border-radius: 20px; margin-right: 12px; margin-top: 5px">
+                </a>
+            </p>
+            <!--Аватарка-->
+
+            <div>
+                <!--Название канала-->
+                <a href="{% url 'videos:profile' video.author %}" style="text-decoration: none;
+                 color: black; font-weight: 600; font-size: 18px;">{{ video.author }}</a>
+                <!--Название канала-->
+                <p style="opacity: 85%; font-size: 14px">{{ follower_count }} подписчиков</p>
+            </div>
+            <!--Кнопка подписаться-->
+            <div style="margin-left: 25px">
+                {% if user != video.author.user %}
+                {% if following %}
+                <a href="{% url 'videos:profile_unfollow' video.author %}" class="sub_button">Отписаться</a>
+                {% else %}
+                <a href="{% url 'videos:profile_follow' video.author %}" class="sub_button">Подписаться</a>
+                {% endif %}
+                {% endif %}
+            </div>
+            <!--Кнопка подписаться-->
+        </div>
+
+        <!--Описание видео-->
+        <div style="width: 1280px; max-height: 504px;
+         border-radius: 10px; font-family: Roboto; font-size: 17px; opacity: 80%">
+            <p style="max-width: 800px; word-wrap: break-word">{{ video.description }}</p>
+        </div>
+        <!--Описание видео-->
+
+        <!--Комментарии-->
+
+        <p style="font-size: 18px; opacity: 95%">{{ comments.count }} комментариев</p>
+
+        {% include 'includes/comment.html' %}
+        <!--Комментарии-->
+    </div>
+
+    <div style="width: 402px; margin-top: 20px; margin-left: 25px">
+        {% for video in videos reversed %}
+        <div style="display: flex; margin-bottom: 10px">
+            <div style="margin-right: 10px">
+                <a href="{% url 'videos:video_detail' video.pk %}" style="text-decoration: none; color: black">
+                    <img title="{{ video.title }}" src="{{ video.preview.url }}" alt="" width="168" height="94" style="border-radius: 10px">
+                </a>
+            </div>
+            <div style="display: inline-block">
+                <p style="margin-bottom: 0; font-size: 17px; font-weight: 500">
+                    <a title="{{ video.title }}" href="{% url 'videos:video_detail' video.pk %}" style="text-decoration: none; color: black">
+                        {{ video.title| truncatechars:40 }}
+                    </a>
+                </p>
+                <p style="margin-bottom: 0;">
+                    <a title="Профиль пользователя {{ video.author }}"
+                       href="{% url 'videos:profile' video.author %}" style="text-decoration: none; color: black">{{ video.author }}</a>
+                </p>
+                <div style="display: flex">
+<!--                    <p style="margin-bottom: 0;">0 просмотров •</p>-->
+                    <p style="margin-bottom: 0">{{ video.pub_date }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load embed_video_tags %}
+{% block title %}
+YouTube
+{% endblock %}
+{% block content %}
+{% include 'includes/sidebar.html' %}
+<div class="content">
+
+    <div style="margin-top: 40px; margin-left: 4%">
+        <div class="row row-cols-auto">
+            {% for video in videos reversed %}
+            <div class="col col-auto text_bottom_video" style="margin-bottom: 40px; text-align: left">
+                <!--Превью-->
+                <a href="{% url 'videos:video_detail' video.pk %}">
+                    <img title="{{ video.title }}" src="{{ video.preview.url }}" width="360" height="202" style="border-radius: 15px; margin-bottom: 15px">
+                </a>
+                <!--Превью-->
+
+                <div style="display: flex; vertical-align: top;">
+                    <!--Аватарка-->
+                    <p>
+                        <a href="{% url 'videos:profile' video.author %}">
+                            <img src="{{ video.author.picture.url }}" width="36" height="36" style="border-radius: 20px; margin-right: 12px">
+                        </a>
+                    </p>
+                    <!--Аватарка-->
+
+                    <div>
+                        <!--Название видео-->
+                        <p style="max-width: 280px; word-wrap: break-word; font-weight: 500; font-family: Roboto; margin-bottom: 0px; font-size: 1.1rem">
+                            <a title="{{ video.title }}" href="{% url 'videos:video_detail' video.pk %}">{{video.title| truncatechars:50 }}</a>
+                        </p>
+                        <!--Название видео-->
+
+                        <!--Название канала-->
+                        <a href="{% url 'videos:profile' video.author %}" style="opacity: 65%">{{ video.author }}</a>
+                        <!--Название канала-->
+
+                        <!--Просмотры и время публикации видео-->
+                        <div style="display: flex; opacity: 65%">
+<!--                            <p style="margin-right: 5px">0 просмотров •</p>-->
+                            <p>{{ video.pub_date }}</p>
+                        </div>
+                        <!--Просмотры и время публикации видео-->
+
+                    </div>
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

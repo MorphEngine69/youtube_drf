@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %} Редактировать видео {% endblock %}
+{% block content %}
+<div class="row" style="margin-left: 28%">
+    <div class="col-md-8 p-5">
+        <div class="card">
+            <div class="card-header">
+                Редактировать видео
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" action="#">
+                    {% include 'includes/authentication.html' %}
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">
+                            Сохранить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

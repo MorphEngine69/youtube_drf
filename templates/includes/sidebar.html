@@ -1,0 +1,29 @@
+<div class="side-bar">
+
+    <div style="margin-left: 15px; margin-top: 15px;">
+
+        <a href="{% url 'videos:index' %}" style="display: flex; text-decoration: none; color: black; font-weight: 500; font-size: 17px;">
+            <i class="material-icons">home</i>
+            <p style="margin: 0;">Главная</p>
+        </a>
+
+        <a href="{% url 'videos:follow_index' %}" style="display: flex; text-decoration: none; color: black; font-weight: 500; font-size: 17px; margin-top: 15px">
+            <i class="material-icons">subscriptions</i>
+            <p style="margin: 0;">Подписки</p>
+        </a>
+
+        <hr>
+
+        <a href="{% url 'videos:profile' user %}" style="display: flex; text-decoration: none; color: black; font-weight: 500; font-size: 17px;">
+            <i class="material-icons">play_arrow</i>
+            <p style="margin: 0;">Ваши видео</p>
+        </a>
+
+        <a href="#" style="display: flex; text-decoration: none; color: black; font-weight: 500; font-size: 17px; margin-top: 15px">
+            <i class="material-icons">thumb_up</i>
+            <p style="margin: 0;">Понравившиеся</p>
+        </a>
+
+    </div>
+
+</div>
