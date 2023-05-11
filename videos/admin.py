@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Video, Profile, Comment, Follow
+from .models import Video, Profile, Comment, Follow, LikeDislike
 
 
 @admin.register(Profile)
@@ -65,4 +65,21 @@ class FollowAdmin(admin.ModelAdmin):
         'author',
     )
     search_fields = ('user', 'author',)
+    empty_value_display = '-пусто-'
+
+
+@admin.register(LikeDislike)
+class LikeDislikeAdmin(admin.ModelAdmin):
+    """Отвечает за отображение модели LikeDislike."""
+    list_display = (
+        'pk',
+        'video',
+        'like',
+        'dislike',
+        'created',
+        'author',
+    )
+    list_editable = ('like', 'dislike',)
+    list_filter = ('created',)
+    search_fields = ('author', 'video',)
     empty_value_display = '-пусто-'

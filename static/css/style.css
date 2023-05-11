@@ -54,6 +54,25 @@ main {
     display: inline-block;
 }
 
+.likedislike {
+    margin-left: 15px;
+    text-decoration: none;
+    color: #909090;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.05);
+    font-weight: 500;
+    border-radius: 25px;
+    padding: 7px 10px;
+    width: 157px;
+    height: 38px;
+    text-align: start;
+}
+
+.likedislike:hover {
+    background: white;
+
+}
+
 .button_comment:hover {
     background-color: #0a53be;
     color: white;

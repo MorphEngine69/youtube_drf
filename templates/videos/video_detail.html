@@ -18,6 +18,7 @@
                     Админ-редактирование
                     {% endif %}
                 </a>
+
                 <a href="{% url 'videos:delete_video' video.pk %}" style="margin-left: 10px">
                     <img src="/media/trash.png" alt="#" width="38" height="38">
                 </a>
@@ -56,6 +57,18 @@
                 {% endif %}
             </div>
             <!--Кнопка подписаться-->
+
+            <div class="likedislike" style="display: flex; max-width: 157px; margin-left: 60%">
+                <a href="{% url 'videos:like_video' video.pk %}" style="display: flex; text-decoration: none;color: black">
+                    <img src="/media/thumbs-up.png" alt="#" width="24" height="24">
+                    <p style="font-weight: 500; color: black; margin-left: 10px">{{ likes }}</p>
+                </a>
+
+                <div style="margin-left: 20px; border-left: 1px solid black; height: 25px"></div>
+                <a href="{% url 'videos:dislike_video' video.pk %}" style="margin-left: 25px">
+                    <img src="/media/thumb-down.png" alt="#" width="24" height="24">
+                </a>
+            </div>
         </div>
 
         <!--Описание видео-->

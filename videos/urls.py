@@ -23,4 +23,7 @@ urlpatterns = [
         name='profile_unfollow',
     ),
     path('search/', views.search_results, name='search_results'),
+    path('feed/liked/', views.liked_index, name='liked_videos'),
+    path('watch/<int:pk>/like/', views.like_video, name='like_video'),
+    path('watch/<int:pk>/dislike/', views.dislike_video, name='dislike_video'),
 ]

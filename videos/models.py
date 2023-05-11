@@ -166,3 +166,38 @@ class Follow(models.Model):
 
     def __str__(self):
         return f'{self.user.user} -> {self.author.user}'
+
+
+class LikeDislike(models.Model):
+    """Модель для создания лайков/дизлайков к видео."""
+    like = models.IntegerField(
+        verbose_name='Лайк',
+        default=0,
+    )
+    dislike = models.IntegerField(
+        verbose_name='Дизлайк',
+        default=0,
+    )
+    video = models.ForeignKey(
+        'Video',
+        on_delete=models.CASCADE,
+        related_name='likedislike',
+        verbose_name='Видео',
+    )
+    created = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Время создания',
+    )
+    author = models.ForeignKey(
+        'Profile',
+        on_delete=models.CASCADE,
+        related_name='likedislike',
+        verbose_name='Автор',
+    )
+
+    class Meta:
+        verbose_name = 'Рейтинг'
+        verbose_name_plural = 'Рейтинги'
+
+    def __str__(self):
+        return f'{self.video} = лайки:{self.like} дизлайки: {self.dislike}'

@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 
 from .forms import UploadVideoForm, CommentForm
-from .models import Video, Profile, Comment, Follow
+from .models import Video, Profile, Comment, Follow, LikeDislike
 
 
 def index(request):
@@ -36,6 +36,8 @@ def video_detail(request, pk):
     """Отвечает за отображение страницы с видео по его pk."""
     video = get_object_or_404(Video, pk=pk)
     request_profile = get_object_or_404(Profile, user=request.user)
+    likes = LikeDislike.objects.filter(video=video, like__gt=0)
+    dislikes = LikeDislike.objects.filter(video=video, dislike__gt=0)
     following = False
     if request_profile.user.is_authenticated:
         following = request_profile.follower.filter(author=video.author)
@@ -47,6 +49,8 @@ def video_detail(request, pk):
     context = {
         'video': video,
         'videos': videos,
+        'likes': likes.count,
+        'dislikes': dislikes.count,
         'comments': comments,
         'picture': user_avatar,
         'following': following,
@@ -174,3 +178,68 @@ def search_results(request):
         'videos': videos,
     }
     return render(request, 'videos/search_results.html', context)
+
+
+@login_required
+def liked_index(request):
+    request_profile = get_object_or_404(Profile, user=request.user)
+    videos = Video.objects.filter(
+        likedislike__author=request_profile, likedislike__like__gte=1)
+    context = {
+        'videos': videos,
+    }
+    return render(request, 'videos/liked_videos.html', context)
+
+
+@login_required
+def like_video(request, pk):
+    request_profile = get_object_or_404(Profile, user=request.user)
+    video = get_object_or_404(Video, pk=pk)
+    ratings = LikeDislike.objects.filter(
+        author=request_profile,
+        video=video,
+    )
+    if not ratings.exists():
+        ratings.create(
+            like=1,
+            video=video,
+            author=request_profile,
+        )
+    else:
+        for rating in ratings:
+            if rating.dislike == 1:
+                ratings.update(
+                    like=1,
+                    dislike=0,
+                )
+            else:
+                ratings.delete()
+
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required
+def dislike_video(request, pk):
+    request_profile = get_object_or_404(Profile, user=request.user)
+    video = get_object_or_404(Video, pk=pk)
+    ratings = LikeDislike.objects.filter(
+        author=request_profile,
+        video=video,
+    )
+    if not ratings.exists():
+        ratings.create(
+            dislike=1,
+            video=video,
+            author=request_profile,
+        )
+    else:
+        for rating in ratings:
+            if rating.like == 1:
+                ratings.update(
+                    like=0,
+                    dislike=1,
+                )
+            else:
+                ratings.delete()
+
+    return redirect(request.META.get('HTTP_REFERER'))
