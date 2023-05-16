@@ -13,7 +13,6 @@ User = get_user_model()
 
 def preview_to_user_path(instance, filename):
     """Загрузка превью по пути images/никнейм автора/превью/год/месяц."""
-
     return (
         'images/{username}/preview/{dt_year}/{dt_month}/{filename}'.format(
             username=instance.author,
@@ -69,6 +68,7 @@ class Profile(models.Model):
 
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
+    """Сигнал для создания профиля при создании django-пользователя."""
     if created:
         Profile.objects.create(user=instance)
     instance.profile.save()
@@ -108,7 +108,7 @@ class Video(models.Model):
         ordering = ['-pub_date']
 
     def __str__(self):
-        return self.title
+        return self.title[:30]
 
 
 class Comment(models.Model):

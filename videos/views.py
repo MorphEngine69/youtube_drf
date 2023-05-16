@@ -15,13 +15,13 @@ def index(request):
 
 
 def profile(request, username):
-    """Отвечает за отображение страницы с профилем"""
+    """Отвечает за отображение страницы с профилем."""
     get_profile = get_object_or_404(Profile, user__username=username)
-    request_profile = get_object_or_404(Profile, user=request.user)
-    get_videos = Video.objects.filter(author=get_profile)
     following = False
-    if request_profile.user.is_authenticated:
+    if request.user.is_authenticated:
+        request_profile = get_object_or_404(Profile, user=request.user)
         following = request_profile.follower.filter(author=get_profile)
+    get_videos = Video.objects.filter(author=get_profile)
     follower_count = Follow.objects.filter(author=get_profile).count()
     context = {
         'profile': get_profile,
@@ -32,15 +32,14 @@ def profile(request, username):
     return render(request, 'users/profile.html', context)
 
 
-def video_detail(request, pk):
+def video_detail(request, video_id):
     """Отвечает за отображение страницы с видео по его pk."""
-    video = get_object_or_404(Video, pk=pk)
-    request_profile = get_object_or_404(Profile, user=request.user)
-    likes = LikeDislike.objects.filter(video=video, like__gt=0)
-    dislikes = LikeDislike.objects.filter(video=video, dislike__gt=0)
+    video = get_object_or_404(Video, pk=video_id)
     following = False
-    if request_profile.user.is_authenticated:
+    if request.user.is_authenticated:
+        request_profile = get_object_or_404(Profile, user=request.user)
         following = request_profile.follower.filter(author=video.author)
+    likes = LikeDislike.objects.filter(video=video, like__gt=0)
     follower_count = Follow.objects.filter(author=video.author).count()
     comments = Comment.objects.filter(video=video)
     videos = Video.objects.all()
@@ -50,7 +49,6 @@ def video_detail(request, pk):
         'video': video,
         'videos': videos,
         'likes': likes.count,
-        'dislikes': dislikes.count,
         'comments': comments,
         'picture': user_avatar,
         'following': following,
@@ -60,7 +58,7 @@ def video_detail(request, pk):
 
 
 @login_required
-def add_comment(request, pk):
+def add_comment(request, video_id):
     video = get_object_or_404(Video, pk=pk)
     form = CommentForm(request.POST or None)
     if form.is_valid():
@@ -69,7 +67,7 @@ def add_comment(request, pk):
         comment.author = get_object_or_404(Profile, user=request.user)
         comment.video = video
         comment.save()
-    return redirect('videos:video_detail', pk=pk)
+    return redirect('videos:video_detail', pk=video_id)
 
 
 @login_required
@@ -83,7 +81,7 @@ def upload_video(request):
         }
         return render(request, 'videos/upload_video.html', context)
     if not form.is_valid():
-        return render(request, 'videos/upload_video,html', {
+        return render(request, 'videos/upload_video.html', {
             'form': form, 'is_edit': False})
     video = form.save(commit=False)
     video.author = get_object_or_404(Profile, user=request.user)
@@ -92,9 +90,9 @@ def upload_video(request):
 
 
 @login_required
-def edit_video(request, pk):
+def edit_video(request, video_id):
     """Отвечает за отображение страницы с формой редактированием видео."""
-    video = get_object_or_404(Video, pk=pk)
+    video = get_object_or_404(Video, pk=video_id)
     request_profile = get_object_or_404(Profile, user=request.user)
     form = UploadVideoForm(
         request.POST or None,
@@ -109,7 +107,7 @@ def edit_video(request, pk):
     if not video.author == request_profile and (
             request_profile.user.is_superuser is False
     ):
-        return redirect(f'/watch/{pk}/')
+        return redirect(f'/watch/{video_id}/')
     if not request.method == 'POST':
         return render(request, 'videos/edit_video.html', context)
     if not form.is_valid:
@@ -121,14 +119,14 @@ def edit_video(request, pk):
         video.author = request_profile
 
     video.save()
-    return redirect(f'/watch/{pk}/')
+    return redirect(f'/watch/{video_id}/')
 
 
 @login_required
-def delete_video(request, pk):
+def delete_video(request, video_id):
     """Отвечает за удаление видео из базы данных."""
     request_profile = get_object_or_404(Profile, user=request.user)
-    video = get_object_or_404(Video, pk=pk)
+    video = get_object_or_404(Video, pk=video_id)
     if request_profile == video.author or request_profile.user.is_superuser:
         video.delete()
     return redirect('videos:index')
@@ -192,9 +190,9 @@ def liked_index(request):
 
 
 @login_required
-def like_video(request, pk):
+def like_video(request, video_id):
     request_profile = get_object_or_404(Profile, user=request.user)
-    video = get_object_or_404(Video, pk=pk)
+    video = get_object_or_404(Video, pk=video_id)
     ratings = LikeDislike.objects.filter(
         author=request_profile,
         video=video,
@@ -219,9 +217,9 @@ def like_video(request, pk):
 
 
 @login_required
-def dislike_video(request, pk):
+def dislike_video(request, video_id):
     request_profile = get_object_or_404(Profile, user=request.user)
-    video = get_object_or_404(Video, pk=pk)
+    video = get_object_or_404(Video, pk=video_id)
     ratings = LikeDislike.objects.filter(
         author=request_profile,
         video=video,
