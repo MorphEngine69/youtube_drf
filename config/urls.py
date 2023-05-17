@@ -12,7 +12,6 @@ schema_view = get_schema_view(
     openapi.Info(
         title='YouTube API',
         default_version='v1',
-        description='no desc',
     ),
     patterns=[
         path('api/', include('api.urls')),

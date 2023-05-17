@@ -3,11 +3,11 @@ from rest_framework import filters
 from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.parsers import MultiPartParser, JSONParser
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ModelViewSet
 
 from videos.models import Video, Profile, Follow, LikeDislike
-from .permissions import IsAuthorOrReadOnly, IsProfileOrReadOnly
+from .permissions import (IsAuthorOrReadOnly, IsProfileOrReadOnly,
+                          FollowOrReadOnly)
 from .serializers import (VideoSerializer, ProfileSerializer,
                           CommentSerializer, FollowSerializer,
                           LikeDislikeSerializer)
@@ -22,9 +22,7 @@ class ProfileViewSet(ModelViewSet):
     parser_classes = [MultiPartParser, JSONParser]
     filter_backends = [filters.SearchFilter, ]
     search_fields = ['user__username', 'date_of_birth', ]
-
-    def perform_create(self, serializer):
-        serializer.save()
+    http_method_names = ['get', 'patch', 'put']
 
 
 class VideoViewSet(ModelViewSet):
@@ -62,10 +60,18 @@ class CommentViewSet(ModelViewSet):
 class FollowViewSet(ModelViewSet):
     """Вьюсет для обработки подписки на пользователя."""
     queryset = Follow.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = [FollowOrReadOnly, ]
     serializer_class = FollowSerializer
     filter_backends = [filters.SearchFilter, ]
     search_fields = ['author__user__username', ]
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            request_profile = get_object_or_404(
+                Profile, user=self.request.user
+            )
+            return request_profile.follower.all()
+        return self.queryset.all()
 
     def perform_create(self, serializer):
         request_profile = get_object_or_404(Profile, user=self.request.user)
@@ -90,4 +96,4 @@ class LikeDislikeViewSet(ModelViewSet):
         if not video.likedislike.filter(author=request_profile):
             serializer.save(author=request_profile, video=video)
         else:
-            raise ValidationError("Уже есть оценка у этого видео!")
+            raise ValidationError('Уже есть оценка у этого видео!')

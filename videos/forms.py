@@ -4,6 +4,7 @@ from .models import Video, Comment
 
 
 class UploadVideoForm(forms.ModelForm):
+    """Форма для загрузки/редактирования видео."""
     class Meta:
         model = Video
         fields = (
@@ -15,6 +16,7 @@ class UploadVideoForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
+    """Форма для создания комментария к видео."""
     class Meta:
         model = Comment
         fields = ('text',)

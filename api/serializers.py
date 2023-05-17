@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from videos.models import Video, Profile, Comment, Follow, LikeDislike
@@ -38,6 +39,7 @@ class VideoSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'video',
+            'preview',
             'pub_date',
             'author',
         ]
@@ -68,6 +70,9 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class FollowSerializer(serializers.ModelSerializer):
     """Сериализация модели подписки на пользователя."""
+    author = serializers.PrimaryKeyRelatedField(
+        queryset=Profile.objects.all()
+    )
     username = serializers.SerializerMethodField('get_username')
     author_name = serializers.SerializerMethodField(
         'get_author_username')
@@ -90,6 +95,14 @@ class FollowSerializer(serializers.ModelSerializer):
             'author_name',
         ]
         read_only_fields = ['id', 'user', 'username', 'author_name', ]
+
+    def validate(self, data):
+        request_profile = get_object_or_404(
+            Profile, user=self.context['request'].user)
+        if request_profile == data['author']:
+            raise serializers.ValidationError(
+                'Нельзя оформить подписку на себя')
+        return data
 
 
 class LikeDislikeSerializer(serializers.ModelSerializer):

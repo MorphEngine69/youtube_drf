@@ -59,7 +59,8 @@ def video_detail(request, video_id):
 
 @login_required
 def add_comment(request, video_id):
-    video = get_object_or_404(Video, pk=pk)
+    """Отвечает за отображение страницы с формой добавления комментария."""
+    video = get_object_or_404(Video, pk=video_id)
     form = CommentForm(request.POST or None)
     if form.is_valid():
         comment = form.save(commit=False)
@@ -67,7 +68,7 @@ def add_comment(request, video_id):
         comment.author = get_object_or_404(Profile, user=request.user)
         comment.video = video
         comment.save()
-    return redirect('videos:video_detail', pk=video_id)
+    return redirect('videos:video_detail', video_id=video_id)
 
 
 @login_required
@@ -180,6 +181,7 @@ def search_results(request):
 
 @login_required
 def liked_index(request):
+    """Отвечает за отображение страницы с видео, где есть лайк от юзера."""
     request_profile = get_object_or_404(Profile, user=request.user)
     videos = Video.objects.filter(
         likedislike__author=request_profile, likedislike__like__gte=1)
@@ -191,6 +193,7 @@ def liked_index(request):
 
 @login_required
 def like_video(request, video_id):
+    """Отвечает за добавление лайка к видео."""
     request_profile = get_object_or_404(Profile, user=request.user)
     video = get_object_or_404(Video, pk=video_id)
     ratings = LikeDislike.objects.filter(
@@ -218,6 +221,7 @@ def like_video(request, video_id):
 
 @login_required
 def dislike_video(request, video_id):
+    """Отвечает за добавления дизлайка к видео."""
     request_profile = get_object_or_404(Profile, user=request.user)
     video = get_object_or_404(Video, pk=video_id)
     ratings = LikeDislike.objects.filter(

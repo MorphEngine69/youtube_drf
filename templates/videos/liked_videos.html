@@ -10,7 +10,7 @@
     <div style="margin-top: 40px; margin-left: 4%">
         <div class="row row-cols-auto">
             {% for video in videos reversed %}
-            <div class="col col-auto text_bottom_video" style="margin-bottom: 40px; text-align: left">
+            <div class="col col-auto text_bottom_video" style="margin-bottom: 10px; text-align: left">
                 <!--Превью-->
                 <a href="{% url 'videos:video_detail' video.pk %}">
                     <img title="{{ video.title }}" src="{{ video.preview.url }}" width="360" height="202" style="border-radius: 15px; margin-bottom: 15px">
